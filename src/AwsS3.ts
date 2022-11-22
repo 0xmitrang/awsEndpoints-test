@@ -1,4 +1,9 @@
-import { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
+import {
+    PutObjectCommand,
+    GetObjectCommand,
+    DeleteObjectCommand,
+    ListObjectsCommand
+} from '@aws-sdk/client-s3'
 import { s3Client } from './libs/s3Client'
 import fs from 'fs'
 import 'dotenv/config'
@@ -47,8 +52,21 @@ export async function getImage(fileKey: string) {
         // Convert the ReadableStream to a string.
         console.log('getImage data --> ' + data.Body)
 
-        return await data?.Body?.transformToString().createReadStream()
-        return data.Body.createReadStream()
+        // return await data?.Body?.transformToString().createReadStream()
+        // return data.Body.createReadStream()
+    } catch (err) {
+        console.log('Error', err)
+    }
+}
+
+export async function getObjects() {
+    const bucketParams = {
+        Bucket: bucketName
+    }
+    try {
+        const data = await s3Client.send(new ListObjectsCommand(bucketParams))
+        console.log('getObjects from bucket -->', data)
+        return data
     } catch (err) {
         console.log('Error', err)
     }
