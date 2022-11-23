@@ -73,8 +73,11 @@ app.post('/sqs/send', async (req: Request, res: Response) => {
 
 app.get('/sqs/receive', async (req: Request, res: Response) => {
     const result: any = await receiveMsg()
-
-    res.send(`Received Message --> ${result?.Messages[0].Body}`)
+    if (result && result.Messages[0] && result.Messages[0].Body) {
+        res.send(`Received Message --> ${result?.Messages[0].Body}`)
+    } else {
+        res.send(`No message in the queue`)
+    }
 })
 
 app.listen(3000, () => {

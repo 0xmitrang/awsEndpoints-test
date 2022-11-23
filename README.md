@@ -49,3 +49,19 @@ aws s3 presign s3://01-nodejs-s3/pug.png --expires-in 10
     ]
 }
 ```
+
+## PutMetricData CLI Command
+
+```shell
+aws cloudwatch put-metric-data --metric-name bytes --namespace MyCustomNameSpace --unit Bytes --value 242678092 --dimensions InstanceId=INSTANCE-ID,InstanceType=t2.micro --region us-east-1
+```
+
+```shell
+aws cloudwatch put-metric-data --metric-name latency --namespace MyCustomNameSpace --unit Milliseconds --value 24 --dimensions InstanceId=INSTANCE-ID,InstanceType=t2.micro --region us-east-1
+```
+
+## Trigger CloudWatch Alarm
+
+```shell
+aws cloudwatch put-metric-data --metric-name latency --namespace MyCustomNameSpace --unit Milliseconds --value 35 --dimensions InstanceId=INSTANCE-ID,InstanceType=t2.micro --region us-east-1
+```

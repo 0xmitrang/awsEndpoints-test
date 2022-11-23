@@ -7,7 +7,7 @@ import {
 } from '@aws-sdk/client-sqs'
 import { sqsClient } from './libs/sqsClient'
 
-const queueName = '01-nodejs-sqs'
+const queueName = 'new-nodejs'
 
 export async function sendMsg() {
     const QueueUrl = await getQueueUrl()
@@ -21,15 +21,19 @@ export async function sendMsg() {
             Author: {
                 DataType: 'String',
                 StringValue: 'Mitrang'
+            },
+            WeeksOn: {
+                DataType: 'Number',
+                StringValue: '6'
             }
         },
-        MessageBody: 'smartSense AWS SQS Hands On',
+        MessageBody: 'smartSense AWS SQS Hands On - Message 3333',
         QueueUrl: QueueUrl //SQS_QUEUE_URL
     }
     try {
         const data = await sqsClient.send(new SendMessageCommand(msgParams))
-        console.log('SQS received data -->', data)
-        return data
+        console.log('SQS received data -->', data.MessageId)
+        return data.MessageId
     } catch (err) {
         console.log('Error', err)
     }
@@ -57,8 +61,7 @@ export async function receiveMsg() {
         AttributeNames: ['SentTimestamp'],
         MaxNumberOfMessages: 1,
         MessageAttributeNames: ['All'],
-        QueueUrl: QueueUrl,
-        WaitTimeSeconds: 20
+        QueueUrl: QueueUrl
     }
 
     try {
