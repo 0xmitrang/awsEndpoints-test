@@ -1,19 +1,24 @@
 import express, { Request, Response } from 'express'
 import 'dotenv/config'
 import { uploadFile, getImage, delImg, getObjects } from './AwsS3'
+import { sendMsg, receiveMsg } from './AwsSQS'
 
 const app = express()
+
+app.get('/', (req, res) => {
+    res.send('AWS app is running...')
+})
 
 // S3 routes
 
 app.get('/s3', async (req: Request, res: Response) => {
     const result = await getObjects()
-    console.log('results from index -->', result?.Contents)
+    // console.log('results from index -->', result?.Contents)
 
     let arr = ''
 
     result?.Contents?.forEach((obj) => {
-        console.log('Key from foreach ---->', obj)
+        // console.log('Key from foreach ---->', obj)
         arr = `${arr} - ${obj.Key}`
     })
 
@@ -25,7 +30,16 @@ app.get('/s3', async (req: Request, res: Response) => {
     `)
 })
 
-app.get('/s3/delete', async (req: Request, res: Response) => {
+app.post('/s3/upload', async (req: Request, res: Response) => {
+    console.log('Uploading a file to AWS S3...')
+
+    const result = await uploadFile()
+    console.log('upload result -->', result)
+
+    res.send(result)
+})
+
+app.post('/s3/delete', async (req: Request, res: Response) => {
     const key = process.env.AWS_FILE_KEY
     if (key) {
         const result = await delImg(key)
@@ -46,24 +60,21 @@ app.get('/s3/delete', async (req: Request, res: Response) => {
 //     }
 // })
 
-app.get('/s3/upload', async (req: Request, res: Response) => {
-    console.log('Uploading an image to AWS S3...')
-
-    const result = await uploadFile()
-    console.log('upload result -->', result)
-
-    res.send(result)
-})
-
 // SQS routes
-app.get('/sqs', (req: Request, res: Response) => {
+app.post('/sqs/send', async (req: Request, res: Response) => {
+    const result = await sendMsg()
     res.send(`
         <div>
-            <h1>Welcome to AWS-S3 Hands On!!!</h1>    
+            <h1>Welcome to AWS-SQS Hands On!!!</h1>
+            ${result}    
         </div>
-
-        <img src="/s3/image" />
     `)
+})
+
+app.get('/sqs/receive', async (req: Request, res: Response) => {
+    const result: any = await receiveMsg()
+
+    res.send(`Received Message --> ${result?.Messages[0].Body}`)
 })
 
 app.listen(3000, () => {

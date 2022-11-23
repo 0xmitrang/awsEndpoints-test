@@ -14,7 +14,13 @@ const region = process.env.AWS_BUCKET_REGION
 // create obj and upload it
 
 export async function uploadFile() {
-    const fileStream = fs.createReadStream(__dirname + '/imgs/aws-s3.jpg')
+    // const fileStream2 = fs.createReadStream(__dirname + '/imgs/demo.html')
+
+    // console.log('createReadStream ---------------------->', fileStream2)
+
+    const fileStream = fs.readFileSync(__dirname + '/imgs/demo.html')
+
+    console.log('readFileSync ---------------------->', fileStream)
 
     const uploadParams = {
         Bucket: bucketName,
